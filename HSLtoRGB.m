@@ -3,7 +3,7 @@ function RGBImage = HSLtoRGB(HSLImage)
 %   Detailed explanation goes here
     [height,width, depth] = size(HSLImage);
     RGBImage = zeros(height, width, depth, 'uint8');
-    
+    a = HSLImage(:,:,1);
     for i=1:height
         for j = 1:width
             h = double(HSLImage(i,j,1)) / 256.0;

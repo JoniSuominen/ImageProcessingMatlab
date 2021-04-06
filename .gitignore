@@ -1,0 +1,4 @@
+*.prj
+*.j2c
+.vs/
+ImageProcessor/
