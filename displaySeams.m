@@ -1,9 +1,8 @@
 function editedImage = displaySeams(img, seamIndices, horizontal)
-%DISPLAYSEAMS Summary of this function goes here
-%   Detailed explanation goes here
+%DISPLAYSEAMS display seam on top of image
+%   Replace pixels in seam with red (RGB 255,0,0).
     editedImage = img;
-    for i=1:length(seamIndices)
-        
+    for i=1:length(seamIndices)       
         if horizontal == false
             editedImage(i, seamIndices(i), 1) = 255;
             editedImage(i, seamIndices(i), 2) = 0;

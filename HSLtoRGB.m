@@ -3,76 +3,66 @@ function RGBImage = HSLtoRGB(HSLImage)
 %   Detailed explanation goes here
     [height,width, depth] = size(HSLImage);
     RGBImage = zeros(height, width, depth, 'uint8');
-    a = HSLImage(:,:,1);
     for i=1:height
         for j = 1:width
-            h = double(HSLImage(i,j,1)) / 256.0;
-            s = double(HSLImage(i,j,2)) / 256.0;
-            l = double(HSLImage(i,j,3)) / 256.0;
-            r = 0;
-            g = 0;
-            b = 0;
+            H = double(HSLImage(i,j,1)) / 255;
+            S = double(HSLImage(i,j,2)) / 255;
+            L = double(HSLImage(i,j,3)) / 255;
             
-            if (s == 0)
-                r = l; g = l; b = l;
-            else 
-                if (l < 0.5) 
-                    temp2 = l .* (1+s);
-                else 
-                    temp2 = (l + s) - (l .* s);
-                end
-                temp1 = 2 * l - temp2;
-                tempr  = h + 1.0 / 3.0;
-                if (tempr >1)
-                    tempr = tempr - 1;
-                end
-                tempg = h;
-                tempb = h - 1.0  / 3.0;
-                if (tempb < 0)
-                    tempb = tempb + 1;
-                end
-
-
-                if (tempr < 1.0 / 6.0)
-                    r = temp1 + (temp2 - temp1) * 6.0 * tempr;
-                elseif (tempr < 0.5)
-                    r = temp2;
-                elseif (tempr < 2.0 /3.0)
-                    r = temp1 + (temp2 - temp1) * ((2.0 / 3.0) - tempr) * 6.0;
+            R = 0;
+            G = 0;
+            B = 0;
+            
+            % If there is no saturation, its a shade of gray
+            % Then R = G = B = L * 255
+            if (S == 0)
+                RGBImage(i,j,:) = L * 255;
+            else
+                if (L < 0.5)
+                    temp1 = L * (1 + S);
                 else
-                    r = temp1;
+                    temp1 = L + S - (L * S); % If luminance >= 0.5
                 end
-
-                if (tempg < 1.0 / 6.0)
-                    g = temp1 + (temp2 - temp1) * 6.0 * tempg;
-                elseif (tempg < 0.5)
-                    g = temp2;
-                elseif (tempg < 2.0 /3.0)
-                    g = temp1 + (temp2 - temp1) * ((2.0 / 3.0) - tempg) * 6.0;
-                else
-                    g = temp1;
+                
+                temp2 = 2 * L - temp1;
+                
+                tempRed = H + 1/3;
+                tempGreen = H;
+                tempBlue = H - 1/3;
+                
+                if (tempRed > 1) 
+                    tempRed = tempRed - 1; % Sanity check
                 end
-
-                if (tempb < 1.0 / 6.0)
-                    b = temp1 + (temp2 - temp1) * 6.0 * tempb;
-                elseif (tempb < 0.5)
-                    b = temp2;
-                elseif (tempb < 2.0 /3.0)
-                    b = temp1 + (temp2 - temp1) * ((2.0 / 3.0) - tempb) * 6.0;
-                else
-                    b = temp1;
+                
+                if (tempBlue < 0)
+                    tempBlue = tempBlue + 1; % Sanity check
                 end
-
+                
+                % Color tests to choose what formula to use for R, G and B.
+                
+                R = colorTest(tempRed, temp1, temp2);
+                G = colorTest(tempGreen, temp1, temp2);
+                B  = colorTest(tempBlue, temp1, temp2);
+                RGBImage(i,j, 1) = uint8(R*255.0);
+                RGBImage(i,j, 2) = uint8(G*255.0);
+                RGBImage(i,j,3) = uint8(B*255.0);
             end
 
-            RGBImage(i,j, 1) = uint8(r.*255.0);
-            RGBImage(i,j, 2) = uint8(g.*255.0);
-            RGBImage(i,j,3) = uint8(b.*255.0);
-
         end
+    end 
+end
+
+function colorValue = colorTest(tempColor, temp1, temp2)
+    if (6 * tempColor < 1) % Test 1
+        colorValue = temp2 +(temp1 - temp2) * 6 * tempColor;
+    elseif (2 * tempColor < 1) % Test 2
+        colorValue = temp1;
+    elseif (3 * tempColor < 2) % Test 3
+        colorValue = temp2 + (temp1 - temp2) * (2/3 - tempColor) * 6;
+    else
+        colorValue = temp2; % If none passed
     end
     
-    
-    
 end
+
 

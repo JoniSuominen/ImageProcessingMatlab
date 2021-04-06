@@ -1,6 +1,6 @@
 function newImage = removeSeam(img, seamIndices)
-%REMOVESEAM Summary of this function goes here
-%   Detailed explanation goes here
+%REMOVESEAM Remove seam in image
+%   Remove seam in image and move pixels to left
     [height, width, depth] = size(img);
     newImage = ones(height ,width-1 ,3, 'uint8');
     for i=1:height

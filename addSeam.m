@@ -1,8 +1,8 @@
 function newImage = addSeam(img, seamIndices)
-%REMOVESEAM Summary of this function goes here
-%   Detailed explanation goes here
+%REMOVESEAM Add seam to image
+%   Add seam to image by moving pixels to right 
     [height, width, depth] = size(img);
-    newImage = ones(height ,width+1  ,3, 'uint8');
+    newImage = ones(height ,width+1,3, 'uint8');
     for i=1:height
         val = seamIndices(i);
         newImage(i, 1:val, :) = img(i, 1:val, :);
